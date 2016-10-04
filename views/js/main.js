@@ -18,6 +18,15 @@ cameron *at* udacity *dot* com
 
 // As you may have realized, this website randomly generates pizzas.
 // Here are arrays of all possible pizza ingredients.
+
+//USER Added variables
+var windowHeight = window.innerHeight;
+var windowWidth = window.innerWidth;
+var s = 256;
+var cols = windowWidth/s;
+var numOfPizzas = (cols * (windowHeight/s)) + 1;
+
+console.log('start');
 var pizzaIngredients = {};
 pizzaIngredients.meats = [
   "Pepperoni",
@@ -406,13 +415,13 @@ var resizePizzas = function(size) {
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
+        document.getElementById("pizzaSize").innerHTML = "Small";
         return;
       case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
+        document.getElementById("pizzaSize").innerHTML = "Medium";
         return;
       case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
+        document.getElementById("pizzaSize").innerHTML = "Large";
         return;
       default:
         console.log("bug in changeSliderLabel");
@@ -424,7 +433,7 @@ var resizePizzas = function(size) {
    // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
   function determineDx (elem, size) {
     var oldWidth = elem.offsetWidth;
-    var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
+    var windowWidth = document.getElementById("randomPizzas").offsetWidth;
     var oldSize = oldWidth / windowWidth;
 
     // Changes the slider value to a percent width
@@ -449,10 +458,14 @@ var resizePizzas = function(size) {
 
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+    //Used more effecient DOM selecters
+    var randomPizzas = document.getElementsByClassName("randomPizzaContainer");
+    //Moved dimension and width calculations outside of for loop. No need to redo work.
+    var dx = determineDx(randomPizzas[0], size);
+    var newwidth = (randomPizzas[0].offsetWidth + dx) + 'px';
+
+    for (var i = 0; i < randomPizzas.length; i++) {
+      randomPizzas[i].style.width = newwidth;
     }
   }
 
@@ -497,14 +510,22 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
 // Moves the sliding background pizzas based on scroll position
+
+var items = document.getElementsByClassName('mover');
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
-  var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+  var scrollTop = document.body.scrollTop / 1250;
+  var amountOfBgPizzas = items.length;
+  var phase = [];
+
+  for(var i = 0; i < 5; i++){
+    phase[i] = Math.sin(scrollTop + (i % 5));
+  }
+
+  for (var i = 0; i < amountOfBgPizzas; i++) {
+    items[i].style.left = items[i].basicLeft + 100 * phase[i%5] + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -522,9 +543,14 @@ window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
-  var cols = 8;
-  var s = 256;
-  for (var i = 0; i < 200; i++) {
+
+  console.log(cols);
+  console.log(windowHeight);
+  console.log(windowWidth);
+  console.log(cols * (windowHeight/s));
+
+
+  for (var i = 0; i < numOfPizzas; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
