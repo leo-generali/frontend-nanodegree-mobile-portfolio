@@ -12,6 +12,7 @@
 ####Background Pizzas
 - Changed the number of background pizzas generated on page load. The website used to create 200 pizzas. Now, the site creates a number of pizzas based on the width and height of the users browser window. For my desktop, this was typically around ~25. This GREATLY increased framerate.a
 - Move var items = document.getElementsByClassName('mover') outside of updatePositions. It did not need to be recreated everytime updatePositions was run.
+- Move other various variable declarations outside of for-loops
 
 ####Slider Pizzas
 - Used more efficient DOM queries
